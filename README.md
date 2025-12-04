@@ -93,7 +93,7 @@ Path	/planned_path	Full smoothed path
 Odometry	/odom	Robot position
 LaserScan	/scan	For obstacle avoidance visualization
  Algorithms Explained
-1. Path Smoothing (Cubic Spline)
+1.** Path Smoothing (Cubic Spline)**
 
 Discrete waypoints are interpolated using cubic splines to generate a smooth, continuous curve.
 
@@ -105,7 +105,7 @@ Better for tracking
 
 More realistic robot motion
 
-2. Time-Parameterized Trajectory
+2.** Time-Parameterized Trajectory**
 
 Each smoothed point is given a timestamp based on robot speed:
 
@@ -116,7 +116,7 @@ Outputs:
 
 (x, y, t, v)
 
-3. Pure Pursuit Controller
+3. **Pure Pursuit Controller**
 
 A geometric tracking controller.
 
@@ -140,7 +140,7 @@ Simple
 
 Works extremely well on differential-drive robots
 
- 4. Obstacle Avoidance (Extra Credit)
+ 4. **Obstacle Avoidance (Extra Credit)**
 
 LiDAR (/scan) is used to generate a repulsive vector:
 
