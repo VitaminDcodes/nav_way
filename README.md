@@ -1,5 +1,6 @@
 #  nav_way  
 ### ROS2 Humble • TurtleBot3 • Trajectory Tracking • Path Smoothing • Pure Pursuit • Obstacle Avoidance
+https://github.com/user/repo/assets/123456789/video_nav.mp4
 
 This repository contains a complete **ROS2 Humble workspace (`ros2_ws`)** implementing:
 
