@@ -93,59 +93,98 @@ Marker	/target_point	Pure-Pursuit target (orange sphere)
 Path	/planned_path	Full smoothed path
 Odometry	/odom	Robot position
 LaserScan	/scan	For obstacle avoidance visualization
- Algorithms Explained
-1.** Path Smoothing (Cubic Spline)**
+  Algorithms & Design Choices
+🔹1 Path Smoothing (Cubic Spline Interpolation)
 
-Discrete waypoints are interpolated using cubic splines to generate a smooth, continuous curve.
+Robots cannot follow sharp waypoint corners.
+Thus, we use cubic spline interpolation, producing a curve that is:
 
-Benefits:
+Continuous
 
-Removes sharp corners
+Differentiable
 
-Better for tracking
+Smooth in curvature
 
-More realistic robot motion
+This improves both tracking accuracy and vehicle stability.
 
-2.** Time-Parameterized Trajectory**
+Key advantages:
 
-Each smoothed point is given a timestamp based on robot speed:
+Removes discontinuities
 
-t(i+1) = t(i) + distance / velocity
+Generates realistic motion
+
+Works well with Pure Pursuit
+
+🔹2 Trajectory Generation (Time Parameterization)
+
+The smoothed path is converted into a trajectory with timestamps.
+
+For each pair of points:
+
+distance = √((x₂−x₁)² + (y₂−y₁)²)
+dt = distance / desired_velocity
+t += dt
 
 
-Outputs:
+This yields:
 
-(x, y, t, v)
+(x, y, t, velocity)
 
-3. **Pure Pursuit Controller**
 
-A geometric tracking controller.
+Why important?
 
-Steps:
+The robot knows where it should be at any time
 
-Find a point on the path at lookahead distance L
+Enables velocity profiling
 
-Compute steering angle:
+Helps evaluate tracking performance
 
-heading_error = atan2(target - robot)
+🔹3 Pure Pursuit Controller (Main Tracking Algorithm)
+
+Pure Pursuit is a geometric tracking controller widely used in autonomous robots.
+
+How it works:
+
+Select a lookahead point on the trajectory
+
+Compute directional error:
+
+heading_error = atan2(target_y - y, target_x - x) - robot_yaw
+
+
+Compute angular velocity:
+
 angular_z = k * heading_error
 
 
-Linear speed decreases during sharp turns
+Adjust linear speed during turns for stability.
 
-Advantages:
+Why we choose Pure Pursuit:
 
-Smooth
+Simple yet powerful
 
-Simple
+Provides smooth tracking
 
-Works extremely well on differential-drive robots
+Robust to minor noise
 
- 4. **Obstacle Avoidance (Extra Credit)**
+Works well for differential-drive robots
 
-LiDAR (/scan) is used to generate a repulsive vector:
+This method allows the robot to behave like it is "pulling itself" toward a point on the path.
 
-Final heading = goal_heading + repulsive_heading
+⭐4 Obstacle Avoidance (Extra Credit Requirement)
+
+LaserScan data is used to compute a repulsive vector field:
+
+Obstacles closer than a threshold exert repulsive influence
+
+Repulsive direction is combined with the pure pursuit direction:
+
+final_heading = goal_heading + repulsive_heading
+
+
+If any obstacle is extremely close, robot’s velocity → 0 (safety stop)
+
+This creates a lightweight but effective local avoidance layer.
 
 
 Robot slows down and turns away from close obstacles.
